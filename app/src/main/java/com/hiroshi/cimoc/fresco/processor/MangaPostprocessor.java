@@ -64,6 +64,7 @@ public class MangaPostprocessor extends BasePostprocessor {
         try {
             if (isDone) {
                 if (!jmttIsDone) {
+                    reference = bitmapFactory.createBitmap(mWidth, mHeight, Bitmap.Config.RGB_565);
                     processing(sourceBitmap, reference.get());
                 }
                 return CloseableReference.cloneOrNull(reference);
@@ -265,12 +266,13 @@ public class MangaPostprocessor extends BasePostprocessor {
         String url = mImage.getUrl();
         int scramble_id = 220980;
         int chapterId = 0;
-        if (url.contains("/Cimoc/download/72/")){
-            chapterId = Integer.parseInt(Objects.requireNonNull(StringUtils.match("/-photo-(\\d*)/", url, 1)));
-        }
+//        if (url.contains("/Cimoc/download/72/")){
+//            chapterId = Integer.parseInt(Objects.requireNonNull(StringUtils.match("/-photo-(\\d*)/", url, 1)));
+//        }
         if((url.contains("media/photos")
                 && Integer.parseInt(url.substring(url.indexOf("photos/") + 7, url.lastIndexOf("/"))) > scramble_id)
-                || chapterId > scramble_id) {
+//                || chapterId > scramble_id
+               ) {
             Bitmap resultBitmap = reference.get();
             int rows = 10;
             int remainder  = mHeight % rows;

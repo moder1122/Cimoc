@@ -160,6 +160,7 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
     protected BasePresenter initPresenter() {
         mPresenter = new ReaderPresenter();
         mPresenter.attachView(this);
+
         return mPresenter;
     }
 
@@ -168,6 +169,8 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         mHideInfo = mPreference.getBoolean(PreferenceManager.PREF_READER_HIDE_INFO, false);
         mControllerTrigThreshold = mPreference.getInt(PreferenceManager.PREF_READER_CONTROLLER_TRIG_THRESHOLD, 30) * 0.01f;
         mInfoLayout.setVisibility(mHideInfo ? View.INVISIBLE : View.VISIBLE);
+        // 防止miui及其他魔改ROM启用反色
+        setTheme(R.style.AppThemeNoDark);
         String key = mode == PreferenceManager.READER_MODE_PAGE ?
                 PreferenceManager.PREF_READER_PAGE_TURN : PreferenceManager.PREF_READER_STREAM_TURN;
         turn = mPreference.getInt(key, PreferenceManager.READER_TURN_LTR);
@@ -175,11 +178,14 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
             mReaderBox.setBackgroundResource(R.color.white);
         }
         initSeekBar();
+
         initLayoutManager();
         initReaderAdapter();
         mRecyclerView.setItemAnimator(null);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mReaderAdapter);
+
+
         mRecyclerView.setItemViewCacheSize(2);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -239,17 +245,22 @@ public abstract class ReaderActivity extends BaseActivity implements OnTapGestur
         mLayoutManager.setOrientation(turn == PreferenceManager.READER_TURN_ATB ? LinearLayoutManager.VERTICAL : LinearLayoutManager.HORIZONTAL);
         mLayoutManager.setReverseLayout(turn == PreferenceManager.READER_TURN_RTL);
         mLayoutManager.setExtraSpace(2);
+
     }
 
     @Override
     protected void initData() {
-        mClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
-                ClickEvents.getPageClickEventChoice(mPreference) : ClickEvents.getStreamClickEventChoice(mPreference);
-        mLongClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
-                ClickEvents.getPageLongClickEventChoice(mPreference) : ClickEvents.getStreamLongClickEventChoice(mPreference);
-        long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
-        List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
-        mPresenter.loadInit(id, Objects.requireNonNull(list).toArray(new Chapter[list.size()]));
+        try {
+            mClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
+                    ClickEvents.getPageClickEventChoice(mPreference) : ClickEvents.getStreamClickEventChoice(mPreference);
+            mLongClickArray = mode == PreferenceManager.READER_MODE_PAGE ?
+                    ClickEvents.getPageLongClickEventChoice(mPreference) : ClickEvents.getStreamLongClickEventChoice(mPreference);
+            long id = getIntent().getLongExtra(Extra.EXTRA_ID, -1);
+            List<Chapter> list = getIntent().getParcelableArrayListExtra(Extra.EXTRA_CHAPTER);
+            mPresenter.loadInit(id, Objects.requireNonNull(list).toArray(new Chapter[list.size()]));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

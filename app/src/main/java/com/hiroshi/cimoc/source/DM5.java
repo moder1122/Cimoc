@@ -99,6 +99,8 @@ public class DM5 extends MangaParser {
     protected void initUrlFilterList() {
         filter.add(new UrlFilter("www.dm5.com", "/([\\w\\-]+)"));
         filter.add(new UrlFilter("tel.dm5.com", "/([\\w\\-]+)"));
+        filter.add(new UrlFilter("m.dm5.com", "/([\\w\\-]+)"));
+
     }
 
     @Override
@@ -173,11 +175,14 @@ public class DM5 extends MangaParser {
         if (str != null) {
             try {
                 str = DecryptionUtils.evalDecrypt(str, "newImgs");
+                if (str.equals("")) {
+                    str = DecryptionUtils.evalDecrypt(str);
+                }
                 String[] array = str.split(",");
                 for (int i = 0; i != array.length; ++i) {
                     Long comicChapter = chapter.getId();
                     Long id = Long.parseLong(comicChapter + "000" + i);
-                    list.add(new ImageUrl(id, comicChapter,i + 1, array[i], false));
+                    list.add(new ImageUrl(id, comicChapter, i + 1, array[i], false));
                 }
             } catch (Exception e) {
                 e.printStackTrace();

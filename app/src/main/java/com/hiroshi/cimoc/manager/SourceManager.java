@@ -205,6 +205,12 @@ public class SourceManager {
                 case QiMiaoMH.TYPE:
                     parser = new QiMiaoMH(source);
                     break;
+                case YKMH.TYPE:
+                    parser = new YKMH(source);
+                    break;
+                case DmzjFix.TYPE:
+                    parser = new DmzjFix(source);
+                    break;
                 default:
                     parser = new Null();
                     break;
